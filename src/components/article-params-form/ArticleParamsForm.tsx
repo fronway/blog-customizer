@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { FormEvent, useState, useRef, useEffect } from 'react';
+import clsx from 'clsx';
 import { Select } from 'src/ui/select';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Separator } from 'src/ui/separator';
@@ -12,16 +13,38 @@ import {
 	backgroundColors,
 	ArticleStateType,
 	defaultArticleState,
+	OptionType,
 } from 'src/constants/articleProps';
 
 import styles from './ArticleParamsForm.module.scss';
 
-export const ArticleParamsForm = () => {
+type ArticleParamsFormProps = {
+	onApply: (state: ArticleStateType) => void;
+};
+
+export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-	const sideBarRef = useRef<HTMLElement>(null);
+	const sideBarRef = useRef<HTMLElement | null>(null);
 	const [formState, setFormState] =
 		useState<ArticleStateType>(defaultArticleState);
 
+	const handleChange =
+		(key: keyof ArticleStateType) => (selected: OptionType | null) => {
+			if (!selected) return;
+			setFormState((prev) => ({
+				...prev,
+				[key]: selected,
+			}));
+		};
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		onApply(formState);
+	};
+	const handleReset = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		setFormState(defaultArticleState);
+		onApply(defaultArticleState);
+	};
 	useEffect(() => {
 		if (!isSidebarOpen) return;
 		const handleClickOutside = (e: MouseEvent) => {
@@ -29,7 +52,7 @@ export const ArticleParamsForm = () => {
 				sideBarRef.current &&
 				!sideBarRef.current.contains(e.target as Node)
 			) {
-				setFormState(false);
+				setIsSidebarOpen(false);
 			}
 		};
 		document.addEventListener('mousedown', handleClickOutside);
@@ -43,8 +66,15 @@ export const ArticleParamsForm = () => {
 				isOpen={isSidebarOpen}
 				onClick={() => setIsSidebarOpen(!isSidebarOpen)}
 			/>
-			<aside className={styles.container} ref={sideBarRef}>
-				<form className={styles.form}>
+			<aside
+				className={clsx(styles.container, {
+					[styles.container_open]: isSidebarOpen,
+				})}
+				ref={sideBarRef}>
+				<form
+					className={styles.form}
+					onSubmit={handleSubmit}
+					onReset={handleReset}>
 					<Select
 						title='Шрифт'
 						options={fontFamilyOptions}
