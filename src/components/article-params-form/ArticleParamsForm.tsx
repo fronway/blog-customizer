@@ -21,7 +21,6 @@ import styles from './ArticleParamsForm.module.scss';
 type ArticleParamsFormProps = {
 	onApply: (state: ArticleStateType) => void;
 };
-
 export const ArticleParamsForm = ({ onApply }: ArticleParamsFormProps) => {
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const sideBarRef = useRef<HTMLElement | null>(null);
