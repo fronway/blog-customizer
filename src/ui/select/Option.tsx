@@ -12,7 +12,6 @@ type OptionProps = {
 	option: OptionType;
 	onClick: (value: OptionType['value']) => void;
 };
-
 export const Option = (props: OptionProps) => {
 	const {
 		option: { value, title, optionClassName, className },

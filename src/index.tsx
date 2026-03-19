@@ -14,6 +14,7 @@ const root = createRoot(domNode);
 
 const App = () => {
 	const [appliedState, setAppliedState] = useState(defaultArticleState);
+
 	return (
 		<main
 			className={clsx(styles.main)}
